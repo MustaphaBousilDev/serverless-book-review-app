@@ -1,9 +1,74 @@
 service: serverless-book-review-app
-  provider:
-    name: aws
-    runtime: nodejs14.x
-    region: us-east-1
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    REVIEWS_TABLE: ${self:custom.reviewsTable}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.reviewsTable}
 
-  plugins:
-    - serverless-plugin-typescript
-  functions:
+plugins:
+  - serverless-plugin-typescript
+
+functions:
+  createReview:
+    handler: src/createReview/createReview.handler
+    events:
+      - http:
+          path: /reviews
+          method: post
+          cors: true
+
+  getReview:
+    handler: src/getReview/getReview.handler
+    events:
+      - http:
+          path: /reviews/{reviewId}
+          method: get
+          cors: true
+
+  updateReview:
+    handler: src/updateReview/updateReview.handler
+    events:
+      - http:
+          path: /reviews/{reviewId}
+          method: put
+          cors: true
+
+  deleteReview:
+    handler: src/deleteReview/deleteReview.handler
+    events:
+      - http:
+          path: /reviews/{reviewId}
+          method: delete
+          cors: true
+
+resources:
+  Resources:
+    ReviewsDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.reviewsTable}
+
+custom:
+  reviewsTable: reviews-table-${self:provider.stage}
+      
