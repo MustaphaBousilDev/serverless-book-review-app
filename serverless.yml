@@ -1,0 +1,9 @@
+service: serverless-book-review-app
+  provider:
+    name: aws
+    runtime: nodejs14.x
+    region: us-east-1
+
+  plugins:
+    - serverless-plugin-typescript
+  functions:
