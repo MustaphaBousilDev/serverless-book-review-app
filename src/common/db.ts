@@ -2,24 +2,27 @@ import { DynamoDB } from 'aws-sdk';
 
 const dynamoDB = new DynamoDB.DocumentClient()
 
-const getReviewById = async (reviewId: string) => {
-    const params = {
-        TableName: process.env.REVIEW_TABLE,
-        Key: { id: reviewId }
-    }
+export const getReviewById = async (reviewId: string) => {
+  const params = {
+    TableName: process.env.REVIEWS_TABLE!,
+    Key: { id: reviewId },
+  };
 
-    try {
-        const result = await dynamoDB.get(params).promise();
-        return result.Item;
-    } catch (error) {
-        console.error('Error getting review:', error);
-        throw error;
+  try {
+    const result = await dynamoDB.get(params).promise();
+    if (!result.Item) {
+      throw new Error('Review not found');
     }
-}
+    return result.Item;
+  } catch (error) {
+    console.error('Error getting review:', error);
+    throw error;
+  }
+};
 
 export const createReview = async (review: any) => {
   const params = {
-    TableName: process.env.REVIEWS_TABLE,
+    TableName: process.env.REVIEWS_TABLE!,
     Item: review,
   };
 
@@ -34,7 +37,7 @@ export const createReview = async (review: any) => {
 
 export const updateReview = async (reviewId: string, updatedReview: any) => {
   const params = {
-    TableName: process.env.REVIEWS_TABLE,
+    TableName: process.env.REVIEWS_TABLE!,
     Key: { id: reviewId },
     UpdateExpression: 'set #title = :title, #content = :content, #rating = :rating',
     ExpressionAttributeNames: {
@@ -61,7 +64,7 @@ export const updateReview = async (reviewId: string, updatedReview: any) => {
 
 export const deleteReview = async (reviewId: string) => {
   const params = {
-    TableName: process.env.REVIEWS_TABLE,
+    TableName: process.env.REVIEWS_TABLE!,
     Key: { id: reviewId },
   };
 

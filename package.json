@@ -24,8 +24,12 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.156",
     "@types/node": "^24.8.1",
+    "formidable": "^2.1.1",
+    "path-loader": "^1.0.7",
     "serverless": "^3.40.0",
+    "serverless-offline": "^6.0.0",
     "serverless-plugin-typescript": "^2.1.5",
+    "superagent": "^6.0.0",
     "typescript": "^5.9.3"
   }
 }
