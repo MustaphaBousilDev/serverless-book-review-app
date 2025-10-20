@@ -6,6 +6,9 @@ provider:
   stage: ${opt:stage, 'dev'}
   environment:
     REVIEWS_TABLE: ${self:custom.reviewsTable}
+    # its for using one connection for all request instead of establishe new connection each request , for optimizing performance and cost
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    REVIEWS_BUCKET: my-review-files-bucket-${self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -29,6 +32,11 @@ functions:
           path: /reviews
           method: post
           cors: true
+    versioning:
+      enabled: true 
+    aliases:
+      dev: $LATEST
+      prod: stable 
 
   getReview:
     handler: src/getReview/getReview.handler
@@ -72,4 +80,5 @@ resources:
 
 custom:
   reviewsTable: reviews-table-${self:provider.stage}
+  productionAlias: prod
       
