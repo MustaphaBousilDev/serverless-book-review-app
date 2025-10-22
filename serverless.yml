@@ -42,6 +42,8 @@ provider:
   tracing:
     lambda: true 
     apiGateway: true 
+  versionFunctions: true # enable versioning for all functions
+  
 plugins:
   - serverless-plugin-typescript
   - serverless-offline
@@ -54,15 +56,11 @@ functions:
           path: /reviews
           method: post
           cors: true
-    versioning:
-      enabled: true 
-    aliases:
-      dev: $LATEST
-      prod: stable 
     environment:
       LOG_LEVEL: info 
-    reservedConcurrency: 10
-    provisionedConcurrency: 5
+    #reservedConcurrency: 10
+    #provisionedConcurrency: 5
+    
 
 
   getReview:
@@ -105,11 +103,11 @@ resources:
           WriteCapacityUnits: 1
         TableName: ${self:custom.reviewsTable}
 
-    # Resource-based Policy
     CreateReviewLambdaPermission:
       Type: AWS::Lambda::Permission
       Properties:
-        FunctionName: createReview
+        FunctionName:
+          Ref: CreateReviewLambdaFunction # this is syntax of cloudFormation not a serverless framework -> createReview(name of function in serverless) -> compile to (createReview) in CloudFormation
         Action: lambda:InvokeFunction
         Principal: s3.amazonaws.com
         SourceArn: arn:aws:s3:::${self:provider.environment.REVIEWS_BUCKET}
