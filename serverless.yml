@@ -19,7 +19,20 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.reviewsTable}
-
+    - Effect: Allow 
+      Action:
+        - s3:GetObject 
+        - s3:PutObject 
+      Resource: arn:aws:s3:::${self:provider.environment.REVIEWS_BUCKET}/*
+  logs:
+    restApi:
+      accessLogging: true 
+      executionLogging: true 
+      level: INFO 
+      fullExecutionData: true 
+  tracing:
+    lambda: true 
+    apiGateway: true 
 plugins:
   - serverless-plugin-typescript
   - serverless-offline
@@ -37,6 +50,11 @@ functions:
     aliases:
       dev: $LATEST
       prod: stable 
+    environment:
+      LOG_LEVEL: info 
+    reservedConcurrency: 10
+    provisionedConcurrency: 5
+
 
   getReview:
     handler: src/getReview/getReview.handler
@@ -77,6 +95,15 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:custom.reviewsTable}
+
+    # Resource-based Policy
+    CreateReviewLambdaPermission:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName: createReview
+        Action: lambda:InvokeFunction
+        Principal: s3.amazonaws.com
+        SourceArn: arn:aws:s3:::${self:provider.environment.REVIEWS_BUCKET}
 
 custom:
   reviewsTable: reviews-table-${self:provider.stage}

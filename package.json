@@ -4,7 +4,11 @@
   "description": "The Serverless Book Review App is a project designed to help developers practice and learn key concepts for the AWS Certified Developer - Associate (DVA-C02) exam. This application demonstrates how to build a serverless backend using AWS Lambda, Amazon API Gateway, and Amazon DynamoDB.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "serverless offline",
+    "deploy": "serverless deploy",
+    "remove": "serverless remove",
+    "invoke": "serverless invoke local --function createReview --path event.json",
+    "logs": "serverless logs --function createReview --tail"
   },
   "repository": {
     "type": "git",
