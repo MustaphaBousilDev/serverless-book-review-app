@@ -11,6 +11,8 @@ package:
 provider:
   name: aws
   runtime: nodejs18.x
+  memorySize: 512
+  timeout: 10
   region: us-east-1
   stage: ${opt:stage, 'dev'}
   environment:
@@ -51,6 +53,8 @@ plugins:
 functions:
   createReview:
     handler: src/createReview/createReview.handler
+    memorySize: 1024 # overriding memorySize in the top  (1024MB)
+    timeout: 15 # second and overriding top value
     events:
       - http:
           path: /reviews
