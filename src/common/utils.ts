@@ -1,3 +1,5 @@
+import { APIGatewayProxyResult } from "aws-lambda";
+
 export const generateRandomId = () => {
   return Math.random().toString(36).substring(7);
 };
@@ -5,9 +7,9 @@ export const generateRandomId = () => {
 export const getCurrentTimestamp = () => {
   return new Date().toISOString();
 };
-export const generateErrorResponse = (error: Error) => {
+export const generateErrorResponse = (statusCode: number, message: string): APIGatewayProxyResult => {
   return {
-    error: error.name,
-    message: error.message,
+    statusCode,
+    body: JSON.stringify({ message }),
   };
 };
